@@ -43,7 +43,7 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 public class Main implements IXposedHookLoadPackage {
     //provided
     private static final String WechatPackageName = "com.tencent.mm";
-    public static String location_str="location";
+    public static String location_str = "location";
     public static String wodetag = "wodelog";
 
     public static void show_msg(String message, ContentValues contentValues, String methead_name) {
@@ -65,7 +65,7 @@ public class Main implements IXposedHookLoadPackage {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if(SQLiteDatabase==null){
+        if (SQLiteDatabase == null) {
             return;
         }
 
@@ -85,8 +85,7 @@ public class Main implements IXposedHookLoadPackage {
                         Object type = contentValues.get("type");
 
 
-
-                        if (content!=null&&type!=null&&message.equals("message") && ((String)content ).contains(" 撤回了一条消息") && ((int) type) == 10000) {
+                        if (content != null && type != null && message.equals("message") && ((String) content).contains(" 撤回了一条消息") && ((int) type) == 10000) {
                             param.args[0] = "";
                             Cursor cursor = (Cursor) XposedHelpers.callMethod(param.thisObject, "rawQuery", "select * from message where msgId=?", new String[]{(contentValues.get("msgId") + "")});
                             cursor.moveToNext();
@@ -153,11 +152,10 @@ public class Main implements IXposedHookLoadPackage {
                         String message1 = (String) param.args[0];
 
 
-
                         Throwable wodelog = new Throwable("wodelog");
                         StackTraceElement[] stackTrace = wodelog.getStackTrace();
                         for (int i = 0; i < stackTrace.length; i++) {
-                                Log.e(wodetag,"stackTrace"+i+" :"+stackTrace[i].toString());
+                            Log.e(wodetag, "stackTrace" + i + " :" + stackTrace[i].toString());
                         }
 
 
@@ -166,7 +164,7 @@ public class Main implements IXposedHookLoadPackage {
                         if (message1.equals("message")) {
 
 
-                          //  FrendCheck(param.thisObject);
+                            //  FrendCheck(param.thisObject);
 
 
                             String string = (String) param.args[1];
@@ -174,7 +172,7 @@ public class Main implements IXposedHookLoadPackage {
                             Log.e(wodetag, "查看 insertWithOnConflict 函数参数： message1" + message1 + "; string:" + string + "; int1:" + int1);
 
                             String reserved = (String) contentValues.get("reserved");
-                         //   int type = (int) contentValues.get("type");
+                            //   int type = (int) contentValues.get("type");
                             Number type = (Number) contentValues.get("type");
 
                             if (reserved != null && (type.intValue() == 419430449)) {
@@ -198,7 +196,7 @@ public class Main implements IXposedHookLoadPackage {
     }
 
 
-    public static void openMoney(final ClassLoader cl){
+    public static void openMoney(final ClassLoader cl) {
         Class<?> ad_k = null;
         Class<?> LuckyMoneyReceiveUI = null;
         try {
@@ -209,15 +207,14 @@ public class Main implements IXposedHookLoadPackage {
         }
 
 
-
-        if(ad_k==null){
+        if (ad_k == null) {
             return;
         }
 
 
         // hook红包界面初始化“开”按钮的方法，在该方法完成后自动点击开按钮领取红包
         XposedHelpers.findAndHookMethod("com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI", cl, "d", int.class, int.class,
-                String.class,ad_k, new XC_MethodHook() {
+                String.class, ad_k, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 
@@ -234,12 +231,12 @@ public class Main implements IXposedHookLoadPackage {
                         // ((Activity)param.thisObject).finish();
                     }
                 });
-        if(LuckyMoneyReceiveUI==null){
+        if (LuckyMoneyReceiveUI == null) {
             return;
         }
         // hook红包界面初始化“开”按钮的方法，在该方法完成后自动点击开按钮领取红包
         XposedHelpers.findAndHookMethod(LuckyMoneyReceiveUI, "d", int.class, int.class,
-                String.class,ad_k, new XC_MethodHook() {
+                String.class, ad_k, new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 
@@ -261,10 +258,8 @@ public class Main implements IXposedHookLoadPackage {
     }
 
 
-
     public static boolean kaihongbao = false;
     public static boolean kaizhuanzhang = false;
-
 
 
     private static boolean a(String str) {
@@ -275,7 +270,8 @@ public class Main implements IXposedHookLoadPackage {
         return str.startsWith("com.sonymobile") || str.startsWith("com.sonyericsson");
     }
 
-public static String packageNmae="com.example.wx_plug_in3";
+    public static String packageName = "com.example.wx_plug_in3";
+
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam mLpp) throws Throwable {
 
@@ -284,18 +280,15 @@ public static String packageNmae="com.example.wx_plug_in3";
         String pkgName = mLpp.packageName;
 
 
-
         if (!pkgName.contains(WechatPackageName)) {
             return;
         }
 
 
-
-
         XposedBridge.log("[handleLoadPackage] " + mLpp.packageName);
         if (!a(mLpp.packageName) && !b(mLpp.packageName)) {
 
-            XSharedPreferences mysp = new XSharedPreferences(packageNmae, "FAKEMAP");
+            XSharedPreferences mysp = new XSharedPreferences(packageName, "FAKEMAP");
 
             HookGPS a = HookGPS.a();
             a.a(mysp, mLpp.classLoader);
@@ -312,17 +305,14 @@ public static String packageNmae="com.example.wx_plug_in3";
                 hookMvoid_essage_send(cl);
                 hookMessage_send(cl);
                 hook_launcherUiActivity(cl);//拿到一直存在的activity去打开红包,和增加入口按钮
-                hook_RemittanceDetailUI( cl);//打印跳转到红包页面接收的参数
-                hook_SQLiteDatabase( cl);
+                hook_RemittanceDetailUI(cl);//打印跳转到红包页面接收的参数
+                hook_SQLiteDatabase(cl);
                 openMoney(cl);
                 sezi(cl);
                 create_dialog(cl);
 
 
-
-
-
-              //  HookGPS.HookAndChange(cl);
+                //  HookGPS.HookAndChange(cl);
 
                /* addFrend(cl);
                 addFrend_result(cl);
@@ -345,18 +335,16 @@ public static String packageNmae="com.example.wx_plug_in3";
             LauncherUI = cl.loadClass("com.tencent.mm.ui.LauncherUI");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Log.e(wodetag,"hook_launcherUiActivity:"+e.toString());
+            Log.e(wodetag, "hook_launcherUiActivity:" + e.toString());
 
 
-            LauncherUI=  XposedHelpers.findClass("com.tencent.mm.ui.LauncherUI",cl);
+            LauncherUI = XposedHelpers.findClass("com.tencent.mm.ui.LauncherUI", cl);
 
         }
 
 
-
-
-        if(LauncherUI==null){
-            Log.e(wodetag,"hook_launcherUiActivity:hook失败");
+        if (LauncherUI == null) {
+            Log.e(wodetag, "hook_launcherUiActivity:hook失败");
             return;
         }
 
@@ -375,22 +363,22 @@ public static String packageNmae="com.example.wx_plug_in3";
             @Override
             protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
                 super.beforeHookedMethod(param);
-                Menu menu= (Menu) param.args[0];
-                Log.e(wodetag,"增加地图按钮");
-                menu.add(0,3,0,"选择位置");
+                Menu menu = (Menu) param.args[0];
+                Log.e(wodetag, "增加地图按钮");
+                menu.add(0, 3, 0, "选择位置");
                 menu.getItem(0).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem menuItem) {
 
 
-                        Intent intent=new Intent(Intent.ACTION_MAIN);
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
                         intent.addCategory(Intent.CATEGORY_LAUNCHER);
 //参数是包名，类全限定名，注意直接用类名不行
-                        ComponentName cn=new ComponentName("com.example.wx_plug_in3",
+                        ComponentName cn = new ComponentName("com.example.wx_plug_in3",
                                 "com.amap.searchdemo.MainActivity");
                         intent.setComponent(cn);
-                        ((Activity)param.thisObject).startActivity(intent);
-                       // Toast.makeText((Context)param.thisObject,"haha",Toast.LENGTH_LONG).show();;
+                        ((Activity) param.thisObject).startActivity(intent);
+                        // Toast.makeText((Context)param.thisObject,"haha",Toast.LENGTH_LONG).show();;
 
                         return false;
                     }
@@ -399,22 +387,17 @@ public static String packageNmae="com.example.wx_plug_in3";
         });
 
 
-
-
-
-
-
     }
 
-    private void hook_RemittanceDetailUI(ClassLoader cl)  {//打印跳转到红包页面接收的参数
+    private void hook_RemittanceDetailUI(ClassLoader cl) {//打印跳转到红包页面接收的参数
 
-        Class   RemittanceDetailUI = null;
+        Class RemittanceDetailUI = null;
         try {
-               RemittanceDetailUI = cl.loadClass("com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI");
+            RemittanceDetailUI = cl.loadClass("com.tencent.mm.plugin.remittance.ui.RemittanceDetailUI");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        if(RemittanceDetailUI==null){
+        if (RemittanceDetailUI == null) {
             return;
         }
         XposedHelpers.findAndHookMethod(RemittanceDetailUI, "onCreate", Bundle.class, new XC_MethodHook() {
@@ -444,26 +427,26 @@ public static String packageNmae="com.example.wx_plug_in3";
         });
     }
 
-    public static void sezi(ClassLoader cl){
+    public static void sezi(ClassLoader cl) {
         XposedHelpers.findAndHookMethod(XposedHelpers.findClass("com.tencent.mm.sdk.platformtools.bh", cl), "en", int.class, int.class, new XC_MethodHook() {
 
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 int arg1 = (int) param.args[0];
-             //   Log.e(wodetag,"hook 骰子参数"+arg1+";"+param.args[1]);
-             //   Log.e(wodetag,"hook 骰子返回值:"+param.getResult());
+                //   Log.e(wodetag,"hook 骰子参数"+arg1+";"+param.args[1]);
+                //   Log.e(wodetag,"hook 骰子返回值:"+param.getResult());
 
-                if (arg1==5){
-                   // param.setResult(1);
-                }else if(arg1==2){//石头1，剪子0，布  2
+                if (arg1 == 5) {
+                    // param.setResult(1);
+                } else if (arg1 == 2) {//石头1，剪子0，布  2
                     //param.setResult(1);
                 }
 
-                if(shaizi_position!=-1){
+                if (shaizi_position != -1) {
                     param.setResult(shaizi_position);
                 }
-                shaizi_position=-1;
+                shaizi_position = -1;
 
 
             }
@@ -471,34 +454,34 @@ public static String packageNmae="com.example.wx_plug_in3";
 
         });
     }
-    public static int shaizi_position=-1;
+
+    public static int shaizi_position = -1;
 
 
-    public static void create_dialog(ClassLoader cl){
-        Class  SmileyGrid$1=null;
+    public static void create_dialog(ClassLoader cl) {
+        Class SmileyGrid$1 = null;
         try {
-              SmileyGrid$1 = cl.loadClass("com.tencent.mm.view.SmileyGrid$1");
+            SmileyGrid$1 = cl.loadClass("com.tencent.mm.view.SmileyGrid$1");
             XposedHelpers.findAndHookMethod(SmileyGrid$1, "onItemClick", AdapterView.class, View.class, int.class, long.class, new XC_MethodReplacement() {
                 @Override
                 protected Object replaceHookedMethod(final MethodHookParam param) throws Throwable {
 
 
-                    int positon=(int)  param.args[2];
+                    int positon = (int) param.args[2];
 
-                    Log.e(wodetag,"create_dialog  参数"+param.args[2]+";"+param.args[3]);
-                    String shaizi[]={"1","2","3","4","5","6"};
-                    String caiquan[]={"剪刀","石头","布"};
-
+                    Log.e(wodetag, "create_dialog  参数" + param.args[2] + ";" + param.args[3]);
+                    String shaizi[] = {"1", "2", "3", "4", "5", "6"};
+                    String caiquan[] = {"剪刀", "石头", "布"};
 
 
                     String xueze[] = new String[0];
 
-                    if(positon==1){
-                        xueze=caiquan;
-                    }else if(positon==2){
-                        xueze=shaizi;
-                    }else{
-                        return  XposedBridge.invokeOriginalMethod(param.method,  param.thisObject,  param.args);
+                    if (positon == 1) {
+                        xueze = caiquan;
+                    } else if (positon == 2) {
+                        xueze = shaizi;
+                    } else {
+                        return XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
                     }
 
                     if (launcherUiActivity != null) {
@@ -507,33 +490,32 @@ public static String packageNmae="com.example.wx_plug_in3";
                                 .setSingleChoiceItems(xueze, 0, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        Log.e(wodetag,"选择了："+i);
-                                        shaizi_position=i;
+                                        Log.e(wodetag, "选择了：" + i);
+                                        shaizi_position = i;
                                         dialogInterface.dismiss();
                                         try {
-                                            XposedBridge.invokeOriginalMethod(param.method,  param.thisObject,  param.args);
+                                            XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
                                         } catch (Exception e) {
-                                            Log.e(wodetag,"选择点数的时候报错："+e.toString());
+                                            Log.e(wodetag, "选择点数的时候报错：" + e.toString());
                                             e.printStackTrace();
                                         }
                                     }
                                 })
-                                .setNegativeButton("取消",null)
+                                .setNegativeButton("取消", null)
                                 .setPositiveButton("随机", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         try {
-                                            XposedBridge.invokeOriginalMethod(param.method,  param.thisObject,  param.args);
+                                            XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args);
 
                                         } catch (Exception e) {
-                                            Log.e(wodetag,"选择随机的时候报错："+e.toString());
+                                            Log.e(wodetag, "选择随机的时候报错：" + e.toString());
                                             e.printStackTrace();
                                         }
                                     }
                                 })
                                 .show();
                     }
-
 
 
                     return null;
@@ -543,13 +525,11 @@ public static String packageNmae="com.example.wx_plug_in3";
             });
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            Log.e(wodetag,"create_dialog     "+e.toString());
+            Log.e(wodetag, "create_dialog     " + e.toString());
         }
 
 
-
     }
-
 
 
     private static void LuckyMoney(ContentValues contentValues, ClassLoader cl) {
@@ -621,27 +601,26 @@ public static String packageNmae="com.example.wx_plug_in3";
 
     }
 
-    public static Cursor select_from_table(Object thisObject,String sql_str,String[]params ){
+    public static Cursor select_from_table(Object thisObject, String sql_str, String[] params) {
         //Cursor cursor = (Cursor) XposedHelpers.callMethod(thisObject, "rawQuery", "select * from message where msgId=?", new String[]{(contentValues.get("msgId") + "")});
         Cursor cursor = (Cursor) XposedHelpers.callMethod(thisObject, "rawQuery", sql_str, params);
-        return  cursor;
+        return cursor;
     }
 
 
-
-    public static void addFrend(ClassLoader cl){
+    public static void addFrend(ClassLoader cl) {
         Class<?> aClass = null;
         try {
-           aClass = cl.loadClass("com.tencent.mm.plugin.search.ui.FTSAddFriendUI");
+            aClass = cl.loadClass("com.tencent.mm.plugin.search.ui.FTSAddFriendUI");
             XposedHelpers.findAndHookMethod(aClass, "HQ", String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
-                    Log.e(wodetag,"addFrend:"+param.args[0]);
+                    Log.e(wodetag, "addFrend:" + param.args[0]);
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag,"addFrend:"+e.toString());
+            Log.e(wodetag, "addFrend:" + e.toString());
             e.printStackTrace();
         }
 
@@ -649,8 +628,7 @@ public static String packageNmae="com.example.wx_plug_in3";
     }
 
 
-
-    public static void addFrend_result(ClassLoader cl){
+    public static void addFrend_result(ClassLoader cl) {
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.h.a");
@@ -658,11 +636,11 @@ public static String packageNmae="com.example.wx_plug_in3";
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
-                    Log.e(wodetag,"addFrend_result:  "+param.args[0]);
+                    Log.e(wodetag, "addFrend_result:  " + param.args[0]);
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag,"addFrend_result:  "+e.toString());
+            Log.e(wodetag, "addFrend_result:  " + e.toString());
             e.printStackTrace();
         }
 
@@ -670,8 +648,7 @@ public static String packageNmae="com.example.wx_plug_in3";
     }
 
 
-
-    public static void Frend_page(ClassLoader cl){
+    public static void Frend_page(ClassLoader cl) {
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.plugin.profile.ui.ContactInfoUI");
@@ -680,34 +657,33 @@ public static String packageNmae="com.example.wx_plug_in3";
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
 
-                    Activity activity= (Activity) param.thisObject;
-                    int Contact_Scene= activity.getIntent().getIntExtra("Contact_Scene", 9);
-                    String Verify_ticket =activity. getIntent().getStringExtra("Verify_ticket");
+                    Activity activity = (Activity) param.thisObject;
+                    int Contact_Scene = activity.getIntent().getIntExtra("Contact_Scene", 9);
+                    String Verify_ticket = activity.getIntent().getStringExtra("Verify_ticket");
                     boolean Chat_Readonly = activity.getIntent().getBooleanExtra("Chat_Readonly", false);
-                    boolean User_Verify= activity.getIntent().getBooleanExtra("User_Verify", false);
+                    boolean User_Verify = activity.getIntent().getBooleanExtra("User_Verify", false);
                     String Contact_User = activity.getIntent().getStringExtra("Contact_User");
                     int Contact_VUser_Info_Flag = activity.getIntent().getIntExtra("Contact_VUser_Info_Flag", 0);
                     String Contact_VUser_Info = activity.getIntent().getStringExtra("Contact_VUser_Info");
                     int Contact_Ext_Flag = activity.getIntent().getIntExtra("Contact_Ext_Flag", 0);
-                    boolean force_get_contact =activity. getIntent().getBooleanExtra("force_get_contact", false);
-                    Log.e(wodetag,"Frend_page:  Contact_Scene:"+Contact_Scene+"Contact_VUser_Info_Flag:"+Contact_VUser_Info_Flag+" Contact_VUser_Info:"+Contact_VUser_Info+
-                            " Contact_Ext_Flag:"+Contact_Ext_Flag+" force_get_contact"+force_get_contact+
-                            " Verify_ticket: "+Verify_ticket+" Chat_Readonly:"+Chat_Readonly+" User_Verify:"+User_Verify+" Contact_User"+Contact_User);
+                    boolean force_get_contact = activity.getIntent().getBooleanExtra("force_get_contact", false);
+                    Log.e(wodetag, "Frend_page:  Contact_Scene:" + Contact_Scene + "Contact_VUser_Info_Flag:" + Contact_VUser_Info_Flag + " Contact_VUser_Info:" + Contact_VUser_Info +
+                            " Contact_Ext_Flag:" + Contact_Ext_Flag + " force_get_contact" + force_get_contact +
+                            " Verify_ticket: " + Verify_ticket + " Chat_Readonly:" + Chat_Readonly + " User_Verify:" + User_Verify + " Contact_User" + Contact_User);
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag," Frend_page :"+e.toString());
+            Log.e(wodetag, " Frend_page :" + e.toString());
             e.printStackTrace();
         }
 
 
     }
 
-    public static void Frend_photo(ClassLoader cl){
+    public static void Frend_photo(ClassLoader cl) {
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.pluginsdk.ui.preference.SnsPreference");
-
 
 
             XposedHelpers.findAndHookMethod(aClass, "bVy", new XC_MethodHook() {
@@ -716,8 +692,8 @@ public static String packageNmae="com.example.wx_plug_in3";
                     super.afterHookedMethod(param);
 
 
-                    List list= (List) XposedHelpers.getObjectField( param.thisObject,"list");
-                    Log.e(wodetag,"相册list："+"size"+list.size()+" ; list:"+list.toString());
+                    List list = (List) XposedHelpers.getObjectField(param.thisObject, "list");
+                    Log.e(wodetag, "相册list：" + "size" + list.size() + " ; list:" + list.toString());
 
 
                   /*  StackTraceElement[] wodelogs = new Throwable("wodelog").getStackTrace();
@@ -729,7 +705,7 @@ public static String packageNmae="com.example.wx_plug_in3";
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag," Frend_photo :"+e.toString());
+            Log.e(wodetag, " Frend_photo :" + e.toString());
             e.printStackTrace();
         }
 
@@ -737,15 +713,14 @@ public static String packageNmae="com.example.wx_plug_in3";
     }
 
 
-    public static void strtactivity(ClassLoader cl){//想测试公众号跳转页面
+    public static void strtactivity(ClassLoader cl) {//想测试公众号跳转页面
 
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.ui.MMFragmentActivity");
 
 
-
-            XposedHelpers.findAndHookMethod(aClass, "startActivityForResult", Intent.class,int.class,new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(aClass, "startActivityForResult", Intent.class, int.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
@@ -755,38 +730,35 @@ public static String packageNmae="com.example.wx_plug_in3";
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     super.beforeHookedMethod(param);
 
-                    Intent intent= (Intent) param.args[0];
+                    Intent intent = (Intent) param.args[0];
                     Bundle bundle = intent.getExtras();
                     Set<String> keySet = bundle.keySet();  //获取所有的Key,
 
-                    for(String key : keySet){  //bundle.get(key);来获取对应的value
+                    for (String key : keySet) {  //bundle.get(key);来获取对应的value
                         Object o = bundle.get(key);
-                        Log.e(wodetag,"strtactivity-----key : "+key+"-----"+"value : "+o.toString());
+                        Log.e(wodetag, "strtactivity-----key : " + key + "-----" + "value : " + o.toString());
 
                     }
 
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag," strtactivity :"+e.toString());
+            Log.e(wodetag, " strtactivity :" + e.toString());
             e.printStackTrace();
         }
-
 
 
     }
 
 
-
-    public static void hookMessage_send(final ClassLoader cl){//想拦截发文本消息
+    public static void hookMessage_send(final ClassLoader cl) {//想拦截发文本消息
 
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.ui.chatting.al");
 
 
-
-            XposedHelpers.findAndHookMethod(aClass, "Dl", String.class,new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(aClass, "Dl", String.class, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
@@ -800,63 +772,55 @@ public static String packageNmae="com.example.wx_plug_in3";
 
 
                     for (int i = 0; i < 4; i++) {
-                        XposedHelpers.callMethod(xuQ,"dk",i+"",0);
+                        XposedHelpers.callMethod(xuQ, "dk", i + "", 0);
                     }
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag," hookMessage_send :"+e.toString());
+            Log.e(wodetag, " hookMessage_send :" + e.toString());
             e.printStackTrace();
         }
     }
 
 
-
-
-    public static void hookviodPath(final ClassLoader cl){//想拦截发文本消息
+    public static void hookviodPath(final ClassLoader cl) {//想拦截发文本消息
 
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.modelvoice.q");
 
 
-
-            XposedHelpers.findAndHookMethod(aClass, "getFullPath", String.class,new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(aClass, "getFullPath", String.class, new XC_MethodHook() {
 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                     super.beforeHookedMethod(param);
-                    Log.e(wodetag," hookviodPath :"+param.args[0]);
+                    Log.e(wodetag, " hookviodPath :" + param.args[0]);
 
                     Throwable wodelog = new Throwable("wodelog");
                     StackTraceElement[] stackTrace = wodelog.getStackTrace();
                     for (int i = 0; i < stackTrace.length; i++) {
-                    //    Log.e(wodetag,"stackTrace"+i+" :"+stackTrace[i].toString());
+                        //    Log.e(wodetag,"stackTrace"+i+" :"+stackTrace[i].toString());
                     }
 
 
                 }
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag," hookviodPath :"+e.toString());
+            Log.e(wodetag, " hookviodPath :" + e.toString());
             e.printStackTrace();
         }
     }
 
 
-
-
-
-
-    public static void hookMvoid_essage_send(final ClassLoader cl){//想拦截发语音消息
+    public static void hookMvoid_essage_send(final ClassLoader cl) {//想拦截发语音消息
 
         Class<?> aClass = null;
         try {
             aClass = cl.loadClass("com.tencent.mm.pluginsdk.ui.chat.ChatFooter$8");
 
 
-
-            XposedHelpers.findAndHookMethod(aClass, "onTouch", View.class, MotionEvent.class,new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(aClass, "onTouch", View.class, MotionEvent.class, new XC_MethodHook() {
 
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -903,16 +867,16 @@ public static String packageNmae="com.example.wx_plug_in3";
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
-                    MotionEvent motionEvent= (MotionEvent) param.args[1];
-                   // Log.e(wodetag,"onTouch事件:"+motionEvent.getAction());
-                    if(motionEvent.getAction()==1){
+                    MotionEvent motionEvent = (MotionEvent) param.args[1];
+                    // Log.e(wodetag,"onTouch事件:"+motionEvent.getAction());
+                    if (motionEvent.getAction() == 1) {
                         Object uwL = XposedHelpers.getObjectField(param.thisObject, "uwL");
                         Object uvP = XposedHelpers.getObjectField(uwL, "uvP");
                         Object lSY = XposedHelpers.getObjectField(uwL, "lSY");
 
-                        Log.e(wodetag,"查看语音发送时候的一个变量判断1:"+uvP+":"+lSY);
+                        Log.e(wodetag, "查看语音发送时候的一个变量判断1:" + uvP + ":" + lSY);
 
-                      //  Class<?>  ChatFooter = cl.loadClass("com.tencent.mm.pluginsdk.ui.chat.ChatFooter");
+                        //  Class<?>  ChatFooter = cl.loadClass("com.tencent.mm.pluginsdk.ui.chat.ChatFooter");
                         //XposedHelpers.callStaticMethod(ChatFooter,"z",uwL);
 
 
@@ -923,52 +887,44 @@ public static String packageNmae="com.example.wx_plug_in3";
 
             });
         } catch (ClassNotFoundException e) {
-            Log.e(wodetag," hookMessage_send :"+e.toString());
+            Log.e(wodetag, " hookMessage_send :" + e.toString());
             e.printStackTrace();
         }
-
 
 
     }
 
 
-
-
-    public static void FrendCheck(Object thisObject){
+    public static void FrendCheck(Object thisObject) {
 
 
         Cursor count_cursor = select_from_table(thisObject, "select count(*)from rcontact where type=3 AND username!='weixin'", null);
         count_cursor.moveToFirst();
         Long count = count_cursor.getLong(0);
 
-        Log.e(wodetag,"开始检测僵尸粉\n您的好友数量:"+count+"\n僵尸粉会以名片显示\n同时会标记在标签中");
-        int lahei=0;
-        int shanchu=0;
+        Log.e(wodetag, "开始检测僵尸粉\n您的好友数量:" + count + "\n僵尸粉会以名片显示\n同时会标记在标签中");
+        int lahei = 0;
+        int shanchu = 0;
         int yichang = 0;
-       // Cursor frend_cursor=  select_from_table(thisObject,"select * from rcontact where contactLabelIds = 4",null);
-        Cursor frend_cursor=  select_from_table(thisObject,"select * from rcontact where type=3 AND username!='weixin'",null);
+        // Cursor frend_cursor=  select_from_table(thisObject,"select * from rcontact where contactLabelIds = 4",null);
+        Cursor frend_cursor = select_from_table(thisObject, "select * from rcontact where type=3 AND username!='weixin'", null);
 
 
-        if (frend_cursor != null ) {
-            while (frend_cursor.moveToNext()){
-
-
-
-
-
+        if (frend_cursor != null) {
+            while (frend_cursor.moveToNext()) {
 
 
                 String nickname = frend_cursor.getString(4);
                 int type = frend_cursor.getInt(8);
                 String contactLabelIds = frend_cursor.getString(18);
-                if(contactLabelIds==null){
-                    Log.e(wodetag,"contactLabelIds 为空");
+                if (contactLabelIds == null) {
+                    Log.e(wodetag, "contactLabelIds 为空");
                 }
 
                 String username = frend_cursor.getString(0);
 
-                Log.e(wodetag,"  ");
-                Log.e(wodetag,"nickname："+nickname+"   username:"+username+   "      contactLabelIds:"+contactLabelIds);
+                Log.e(wodetag, "  ");
+                Log.e(wodetag, "nickname：" + nickname + "   username:" + username + "      contactLabelIds:" + contactLabelIds);
 
                /* switch (Integer.parseInt(contactLabelIds)){
 
@@ -986,14 +942,14 @@ public static String packageNmae="com.example.wx_plug_in3";
                         break;
                 }*/
             }
-        }else{
-            Log.e(wodetag,"  ");
-            Log.e(wodetag,"查询到数据0条");
+        } else {
+            Log.e(wodetag, "  ");
+            Log.e(wodetag, "查询到数据0条");
         }
 
 
-        Log.e(wodetag,"  ");
-        Log.e(wodetag,"检测完毕\n僵尸粉:"+shanchu+"个\n被拉黑:"+lahei+"个\n异常好友:"+yichang+"个");
+        Log.e(wodetag, "  ");
+        Log.e(wodetag, "检测完毕\n僵尸粉:" + shanchu + "个\n被拉黑:" + lahei + "个\n异常好友:" + yichang + "个");
     }
 
 }

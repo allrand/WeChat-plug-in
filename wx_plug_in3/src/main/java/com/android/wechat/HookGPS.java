@@ -9,7 +9,6 @@ import android.telephony.CellLocation;
 import android.telephony.gsm.GsmCellLocation;
 
 import com.amap.api.maps.model.LatLng;
-import com.android.wechat.My_XC_MethodHook;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,7 +48,7 @@ public class HookGPS {
     }
 
     public static LatLng b() {
-        XSharedPreferences xSharedPreferences = new XSharedPreferences(Main.packageNmae, "FAKEMAP");
+        XSharedPreferences xSharedPreferences = new XSharedPreferences(Main.packageName, "FAKEMAP");
         LatLng latLng = new LatLng(Double.parseDouble(xSharedPreferences.getString("latitude", "")), Double.parseDouble(xSharedPreferences.getString("longitude", "")));
         XposedBridge.log("read XSharedPreferences latitude:" + latLng.latitude + " longitude: " + latLng.longitude);
         return latLng;
